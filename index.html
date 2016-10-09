@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="appExp">
+  <head>
+    <title>Transclusion</title>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/bootstrap-theme.min.css">
+    <style type="text/css">
+      .hegihtlight {
+        background-color: yellow;
+      }
+      .colorRed {
+        color: red;
+      }
+    </style>
+    <script type="text/javascript" src="javascripts/vendors/angular.min.js"></script>
+    <script type="text/javascript">
+      angular.module('appExp', [])
+        .controller('defaultCtr', ['$scope', function ( $scope ) {
+          $scope.arr = [
+            { name: 'Adel', age: 23 },
+            { name: 'John', age: 34 },
+            { name: 'Bob', age: 15 }
+          ];
+        }])
+        .directive('myRepeat', function () {
+          return {
+            restrict: 'A',
+            priority: 1000,
+            transclude: 'element',
+            terminal: true,
+            compile: function compile( t_elem, t_attrs, transcludFn ) {
+              return ( scope, elem, attrs ) => {
+                const
+                  expression = attrs.myRepeat,
+                  components = expression.split(' '),
+                  parentEl = elem.parent();
+
+                if ( components.length != 3 ||
+                  (components.length == 3 && components[ 1 ] !== 'in')) {
+                  throw TypeError('Invalid expression.');
+                }
+
+                const arr = scope[ components[ 2 ] ];
+
+                if (typeof arr === 'undefined') {
+                  throw TypeError(components[ 2 ] + ' doesn\'t exist');
+                }
+
+                parentEl.empty();
+
+                arr.forEach(item => {
+                  const newScope = scope.$new();
+
+                  newScope[ components[ 0 ] ] = item;
+                  transcludFn(newScope, clone => {
+                    parentEl.append( clone );
+                  });
+                });
+              };
+            }
+          };
+        })
+        .directive('heightLight', function () {
+          return {
+            compile( tElem, tAttrs, transclude ) {
+              console.log( tElem[ 0 ] );
+              tElem.addClass('hegihtlight');
+            }
+          };
+        })
+        .directive('colorRed', function () {
+          return {
+            link( scope, elem, attrs ) {
+              // console.log( elem[ 0 ] );
+              elem.addClass('colorRed');
+            }
+          };
+        });
+    </script>
+  </head>
+  <body ng-controller="defaultCtr">
+    <table class="table">
+      <tr my-repeat="item in arr">
+        <td height-light>Name: {{ item.name }}</td>
+        <td color-red>Age: {{ item.age }}</td>
+      </tr>
+    </table>
+  </body>
+</html>

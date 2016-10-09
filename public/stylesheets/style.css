@@ -1,0 +1,12 @@
+@font-face {
+	font-family: 'digital-clock-font';
+	src: url('../fonts/digital-7.ttf');
+}
+
+.digital {
+	font-family: 'digital-clock-font';
+}
+
+.digital > h3 {
+	font-size: 39px;
+}
