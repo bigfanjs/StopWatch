@@ -17,40 +17,45 @@ angular.module('appExp', [])
     return ( input, format = 'min:s:ms' ) => {
       if ( angular.isDefined( input ) ) {
         const
-          rege = /(h|min|s|ms)([.:\-_\s])(h|min|s|ms)\2(h|min|s|ms)(\2(h|min|s|ms))?/i,
-          components = format.match( rege );
+          rege = /([A-Z]+)([.:\-_\s])([A-Z]+)\2([A-Z]+)(\2([A-Z]+))?/i,
+          components = format.match( rege ),
+          units = format.split( /:|-|_|\./ );
 
         if ( components === null ) {
           throw TypeError('Invalid stop watch format!');
         }
 
-        components.shift();
-
-        const separator = components[ 1 ];
-
-        // get red of the separator.
-        components.splice( 1, 1 );
-
         const
-          length = components.length,
+          separator = components[ 2 ],
+          length = units.length,
           elapsedTime = input.getTime(),
-          time = components.map(item => {
-            const floor = Math.floor;
+          time = units.map(item => {
+            let result;
+
+            const
+              floor = Math.floor,
+              regexp = new RegExp(item, 'i');
 
             switch ( item ) {
               case 'h':
-                const houre = floor(( elapsedTime / 1000 / 60/ 60 ) % 12);
-                return (houre < 10 ? '0' : '') + houre;
+                const houre = floor(( elapsedTime / 36e+5 ) % 12);
+                result = (houre < 10 ? '0' : '') + houre;
+                break;
               case 'min':
-                const minute = floor(( elapsedTime / 1000 / 60 ) % 60);
-                return (minute < 10 ? '0' : '') + minute;
+                const minute = floor(( elapsedTime / 6e+4 ) % 60);
+                result = (minute < 10 ? '0' : '') + minute;
+                break;
               case 's':
                 const second = floor(( elapsedTime / 1000 ) % 60);
-                return (second < 10 ? '0' : '') + second;
+                result = (second < 10 ? '0' : '') + second;
+                break;
               case 'ms':
                 const milisecond = floor(elapsedTime % 100);
-                return (milisecond < 10 ? '0' : '') + milisecond;
+                result = (milisecond < 10 ? '0' : '') + milisecond;
+                break;
             }
+
+            return result;
           }),
           result = time.join( separator );
 
