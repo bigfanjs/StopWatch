@@ -32,9 +32,7 @@ angular.module('appExp', [])
           time = units.map(item => {
             let result;
 
-            const
-              floor = Math.floor,
-              regexp = new RegExp(item, 'i');
+            const floor = Math.floor;
 
             switch ( item ) {
               case 'h':
@@ -105,17 +103,3 @@ angular.module('appExp', [])
       return obj;
     };
   }]);
-
-  /*
-        var
-          elapesTime = input.getTime(),
-          milliseconds = elapesTime % 100,
-          seconds = Math.floor( elapesTime / 1000 ) % 60,
-          minutes = Math.floor( elapesTime / 1000 / 60 ) % 60;
-
-        milliseconds = (milliseconds < 10 ? '0' : '') + milliseconds;
-        seconds = (seconds < 10 ? '0' : '') + seconds;
-        minutes = (minutes < 10 ? '0' : '') + minutes;
-
-        return `${ minutes }:${ seconds }:${ milliseconds }`;
-  */
